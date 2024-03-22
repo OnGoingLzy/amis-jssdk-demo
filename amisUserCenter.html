@@ -1,0 +1,759 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>amis demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="sdk.css" />
+    <link rel="stylesheet" href="helper.css" />
+    <link rel="stylesheet" href="iconfont.css" />
+    <!-- 这是默认主题所需的，如果是其他主题则不需要 -->
+    <!-- 从 1.1.0 开始 sdk.css 将不支持 IE 11，如果要支持 IE11 请引用这个 css，并把前面那个删了 -->
+    <!-- <link rel="stylesheet" href="sdk-ie11.css" /> -->
+    <!-- 不过 amis 开发团队几乎没测试过 IE 11 下的效果，所以可能有细节功能用不了，如果发现请报 issue -->
+    <style>
+        html,
+        body,
+        .app-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="app-wrapper"></div>
+    <script src="sdk.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            let amis = amisRequire('amis/embed');
+            // 通过替换下面这个配置来生成不同页面
+            let amisJSON = {
+                "type": "page",
+                "title": "用户中心权限配置页",
+                "body": [
+                    {
+                        "type": "container",
+                        "isFreeContainer": true,
+                        "size": "xs",
+                        "body": [
+                            {
+                                "type": "container",
+                                "id": "u:bae03cacb8cc",
+                                "body": [
+                                    {
+                                        "type": "select",
+                                        "name": "dropdown",
+                                        "label": "选择系统",
+                                        "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询系统",
+                                        "id": "u:687818d0e45a",
+                                        "multiple": false,
+                                        "onEvent": {
+                                            "change": {
+                                                "weight": 0,
+                                                "actions": [
+                                                    {
+                                                        "actionType": "reload",
+                                                        "target": "table"
+                                                    },
+                                                    {
+                                                        "actionType": "reload",
+                                                        "target": "userTable"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "size": "md"
+                                    },
+                                    {
+                                        "type": "container",
+                                        "body": [
+                                            {
+                                                "type": "tpl",
+                                                "tpl": "角色管理",
+                                                "inline": true,
+                                                "wrapperComponent": "h2",
+                                                "id": "u:6785ba3595ea"
+                                            },
+                                            {
+                                                "type": "crud",
+                                                "name": "table",
+                                                "label": "数据表格",
+                                                "rowSelectable": true,
+                                                "id": "u:a32d310d0f8e",
+                                                "api": {
+                                                    "method": "get",
+                                                    "url": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询角色&qc1=$dropdown"
+                                                },
+                                                "bulkActions": [],
+                                                "headerToolbar": [
+                                                    {
+                                                        "label": "新增角色",
+                                                        "type": "button",
+                                                        "actionType": "dialog",
+                                                        "level": "primary",
+                                                        "editorSetting": {
+                                                            "behavior": "create"
+                                                        },
+                                                        "dialog": {
+                                                            "title": "新增",
+                                                            "body": [
+                                                                {
+                                                                    "type": "form",
+                                                                    "api": "post:https://localhost:44301/home/CommonEdit?type=角色权限管理&editType=新增角色&key1=$dropdown",
+                                                                    "body": [
+                                                                        {
+                                                                            "type": "input-text",
+                                                                            "name": "roleName",
+                                                                            "label": "角色名",
+                                                                            "id": "u:7863fbecb5c9",
+                                                                            "placeholder": "角色名需要在当前系统中唯一",
+                                                                            "required": true
+                                                                        },
+                                                                        {
+                                                                            "label": "权限选择",
+                                                                            "name": "addRolePermission",
+                                                                            "id": "u:0feee65a24e9",
+                                                                            "type": "input-tree",
+                                                                            "multiple": true,
+                                                                            "onlyChildren": true,
+                                                                            "autoCheckChildren": true,
+                                                                            "enableNodePath": false,
+                                                                            "hideRoot": true,
+                                                                            "showIcon": true,
+                                                                            "initiallyOpen": false,
+                                                                            "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询所有权限",
+                                                                            "searchable": true
+                                                                        }
+                                                                    ],
+                                                                    "id": "u:5e3382b3ad7e",
+                                                                    "actions": [
+                                                                        {
+                                                                            "type": "submit",
+                                                                            "label": "提交",
+                                                                            "primary": true
+                                                                        }
+                                                                    ],
+                                                                    "feat": "Insert"
+                                                                }
+                                                            ],
+                                                            "id": "u:98189ac72502",
+                                                            "actions": [
+                                                                {
+                                                                    "type": "button",
+                                                                    "actionType": "cancel",
+                                                                    "label": "取消",
+                                                                    "id": "u:40afd7f857b3"
+                                                                },
+                                                                {
+                                                                    "type": "button",
+                                                                    "actionType": "confirm",
+                                                                    "label": "确定",
+                                                                    "primary": true,
+                                                                    "id": "u:c189405db8ea"
+                                                                }
+                                                            ]
+                                                        },
+                                                        "id": "u:94481f846712",
+                                                        "hiddenOn": "${ISEMPTY(dropdown)}",
+                                                        "visible": true
+                                                    },
+                                                    {
+                                                        "type": "bulk-actions"
+                                                    }
+                                                ],
+                                                "perPageAvailable": [
+                                                    10
+                                                ],
+                                                "messages": {},
+                                                "mode": "table",
+                                                "columns": [
+                                                    {
+                                                        "type": "text",
+                                                        "label": "角色id",
+                                                        "name": "roleId",
+                                                        "id": "u:8cc0bfecd8d4"
+                                                    },
+                                                    {
+                                                        "type": "text",
+                                                        "label": "角色名",
+                                                        "name": "roleName",
+                                                        "id": "u:187516d24aaf"
+                                                    },
+                                                    {
+                                                        "type": "operation",
+                                                        "label": "操作",
+                                                        "buttons": [
+                                                            {
+                                                                "label": "编辑权限",
+                                                                "type": "button",
+                                                                "actionType": "dialog",
+                                                                "level": "link",
+                                                                "editorSetting": {
+                                                                    "behavior": "update"
+                                                                },
+                                                                "dialog": {
+                                                                    "title": "编辑",
+                                                                    "body": [
+                                                                        {
+                                                                            "type": "form",
+                                                                            "api": "https://localhost:44301/home/CommonEdit?type=角色权限管理&editType=修改角色权限&key1=$roleId",
+                                                                            "body": [
+                                                                                {
+                                                                                    "label": "权限选择",
+                                                                                    "name": "tree2",
+                                                                                    "id": "u:0feee65a24e9",
+                                                                                    "type": "input-tree",
+                                                                                    "multiple": true,
+                                                                                    "onlyChildren": true,
+                                                                                    "autoCheckChildren": true,
+                                                                                    "enableNodePath": false,
+                                                                                    "hideRoot": true,
+                                                                                    "showIcon": true,
+                                                                                    "initiallyOpen": false,
+                                                                                    "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询所有权限&qc1=$roleId",
+                                                                                    "searchable": true
+                                                                                }
+                                                                            ],
+                                                                            "id": "u:3d6c595a1ee2",
+                                                                            "actions": [
+                                                                                {
+                                                                                    "type": "submit",
+                                                                                    "label": "提交",
+                                                                                    "primary": true
+                                                                                }
+                                                                            ],
+                                                                            "feat": "Insert"
+                                                                        }
+                                                                    ],
+                                                                    "id": "u:c6d76923c6a8",
+                                                                    "actions": [
+                                                                        {
+                                                                            "type": "button",
+                                                                            "actionType": "cancel",
+                                                                            "label": "取消",
+                                                                            "id": "u:7d56ac8c59f6"
+                                                                        },
+                                                                        {
+                                                                            "type": "button",
+                                                                            "actionType": "confirm",
+                                                                            "label": "确定",
+                                                                            "primary": true,
+                                                                            "id": "u:cd7b95df9dc7"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "id": "u:ca0bfbdb94cd"
+                                                            }
+                                                        ],
+                                                        "id": "u:14367a7e5636"
+                                                    }
+                                                ],
+                                                "store": {
+                                                    "data": "@result"
+                                                }
+                                            }
+                                        ],
+                                        "style": {
+                                            "position": "static",
+                                            "display": "block"
+                                        },
+                                        "size": "none",
+                                        "wrapperBody": false,
+                                        "id": "u:ebf0a38b8593",
+                                        "hiddenOn": "${ISEMPTY(dropdown)}"
+                                    }
+                                ],
+                                "style": {
+                                    "position": "static",
+                                    "display": "block"
+                                },
+                                "isFixedHeight": false,
+                                "isFixedWidth": false,
+                                "size": "xs",
+                                "themeCss": {
+                                    "baseControlClassName": {
+                                        "padding-and-margin:default": {
+                                            "marginBottom": "var(--sizes-size-2)",
+                                            "paddingTop": "var(--sizes-size-3)",
+                                            "paddingRight": "var(--sizes-size-3)",
+                                            "paddingBottom": "var(--sizes-size-3)",
+                                            "paddingLeft": "var(--sizes-size-3)"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "type": "container",
+                                "body": [
+                                    {
+                                        "type": "tpl",
+                                        "tpl": "用户管理",
+                                        "inline": true,
+                                        "wrapperComponent": "h2",
+                                        "id": "u:077a0399125a"
+                                    },
+                                    {
+                                        "type": "input-text",
+                                        "label": "用户名",
+                                        "name": "userName",
+                                        "id": "u:fe36b4782fd8",
+                                        "readOnly": false,
+                                        "size": "md"
+                                    },
+                                    {
+                                        "type": "crud",
+                                        "syncLocation": false,
+                                        "api": {
+                                            "method": "get",
+                                            "url": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询用户&qc1=$dropdown&qc2=$userName"
+                                        },
+                                        "columns": [
+                                            {
+                                                "label": "id",
+                                                "type": "text",
+                                                "name": "id",
+                                                "id": "u:a0aeadf68e38"
+                                            },
+                                            {
+                                                "label": "用户账号",
+                                                "type": "text",
+                                                "name": "originAccount",
+                                                "id": "u:01bb1706aef3"
+                                            },
+                                            {
+                                                "label": "用户来源系统",
+                                                "type": "text",
+                                                "name": "originSys",
+                                                "id": "u:ea56943839e4"
+                                            },
+                                            {
+                                                "type": "input-text",
+                                                "label": "角色",
+                                                "name": "allRole",
+                                                "id": "u:0e44f36da13f",
+                                                "readOnly": true,
+                                                "placeholder": "-"
+                                            },
+                                            {
+                                                "type": "operation",
+                                                "label": "操作",
+                                                "buttons": [
+                                                    {
+                                                        "type": "button",
+                                                        "icon": "fa fa-eye",
+                                                        "actionType": "dialog",
+                                                        "tooltip": "查看详情",
+                                                        "id": "u:49d0b35adf00",
+                                                        "dialog": {
+                                                            "title": "查看详情",
+                                                            "body": [
+                                                                {
+                                                                    "type": "form",
+                                                                    "body": [
+                                                                        {
+                                                                            "label": "id",
+                                                                            "name": "id",
+                                                                            "id": "u:fd929e47e8bc",
+                                                                            "type": "input-text",
+                                                                            "readOnly": false,
+                                                                            "static": true
+                                                                        },
+                                                                        {
+                                                                            "label": "用户账号",
+                                                                            "name": "originAccount",
+                                                                            "id": "u:bdbf64c0ecd0",
+                                                                            "type": "input-text",
+                                                                            "readOnly": false,
+                                                                            "static": true
+                                                                        },
+                                                                        {
+                                                                            "label": "用户来源系统",
+                                                                            "name": "originSys",
+                                                                            "id": "u:7c8e08092af4",
+                                                                            "type": "input-text",
+                                                                            "readOnly": false,
+                                                                            "static": true
+                                                                        },
+                                                                        {
+                                                                            "type": "input-tag",
+                                                                            "name": "allRoleId",
+                                                                            "label": "角色",
+                                                                            "placeholder": "请选择角色",
+                                                                            "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询角色&qc1=$dropdown",
+                                                                            "id": "u:c7c859d4a296",
+                                                                            "optionsTip": "最近您使用的标签",
+                                                                            "labelField": "roleName",
+                                                                            "valueField": "roleId",
+                                                                            "static": true
+                                                                        },
+                                                                        {
+                                                                            "label": "权限",
+                                                                            "name": "userPermission",
+                                                                            "id": "u:0feee65a24e9",
+                                                                            "type": "input-tree",
+                                                                            "multiple": true,
+                                                                            "onlyChildren": true,
+                                                                            "autoCheckChildren": true,
+                                                                            "enableNodePath": false,
+                                                                            "hideRoot": true,
+                                                                            "showIcon": true,
+                                                                            "initiallyOpen": true,
+                                                                            "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询用户所有权限&qc1=$id",
+                                                                            "searchable": false,
+                                                                            "disabled": false,
+                                                                            "static": false
+                                                                        }
+                                                                    ],
+                                                                    "id": "u:ae3a339f8310",
+                                                                    "feat": "Insert",
+                                                                    "actions": [],
+                                                                    "quickEdit": false,
+                                                                    "popOver": false,
+                                                                    "copyable": false,
+                                                                    "borderMode": "none"
+                                                                }
+                                                            ],
+                                                            "id": "u:021a633cf05b",
+                                                            "actions": [
+                                                                {
+                                                                    "type": "button",
+                                                                    "actionType": "cancel",
+                                                                    "label": "取消",
+                                                                    "id": "u:26fdd912e29f"
+                                                                },
+                                                                {
+                                                                    "type": "button",
+                                                                    "actionType": "confirm",
+                                                                    "label": "确定",
+                                                                    "primary": true,
+                                                                    "id": "u:ff72f247f658"
+                                                                }
+                                                            ],
+                                                            "showCloseButton": true,
+                                                            "closeOnOutside": false,
+                                                            "closeOnEsc": false,
+                                                            "showErrorMsg": true,
+                                                            "showLoading": true,
+                                                            "draggable": false
+                                                        }
+                                                    },
+                                                    {
+                                                        "label": "编辑",
+                                                        "type": "button",
+                                                        "actionType": "dialog",
+                                                        "level": "link",
+                                                        "editorSetting": {
+                                                            "behavior": "update"
+                                                        },
+                                                        "dialog": {
+                                                            "title": "编辑用户角色和权限",
+                                                            "body": [
+                                                                {
+                                                                    "type": "form",
+                                                                    "api": "https://localhost:44301/home/CommonEdit?type=角色权限管理&editType=修改用户角色及权限&key1=$id",
+                                                                    "body": [
+                                                                        {
+                                                                            "label": "id",
+                                                                            "name": "id",
+                                                                            "id": "u:fd929e47e8bc",
+                                                                            "type": "input-text",
+                                                                            "readOnly": true
+                                                                        },
+                                                                        {
+                                                                            "label": "用户账号",
+                                                                            "name": "originAccount",
+                                                                            "id": "u:bdbf64c0ecd0",
+                                                                            "type": "input-text",
+                                                                            "readOnly": true
+                                                                        },
+                                                                        {
+                                                                            "label": "用户来源系统",
+                                                                            "name": "originSys",
+                                                                            "id": "u:7c8e08092af4",
+                                                                            "type": "input-text",
+                                                                            "readOnly": true
+                                                                        },
+                                                                        {
+                                                                            "type": "input-tag",
+                                                                            "name": "allRoleId",
+                                                                            "label": "角色",
+                                                                            "placeholder": "请选择角色",
+                                                                            "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询角色&qc1=$dropdown",
+                                                                            "id": "u:c7c859d4a296",
+                                                                            "optionsTip": "最近您使用的标签",
+                                                                            "labelField": "roleName",
+                                                                            "valueField": "roleId"
+                                                                        },
+                                                                        {
+                                                                            "label": "权限选择",
+                                                                            "name": "userPermission",
+                                                                            "id": "u:0feee65a24e9",
+                                                                            "type": "input-tree",
+                                                                            "multiple": true,
+                                                                            "onlyChildren": true,
+                                                                            "autoCheckChildren": true,
+                                                                            "enableNodePath": false,
+                                                                            "hideRoot": true,
+                                                                            "showIcon": true,
+                                                                            "initiallyOpen": false,
+                                                                            "source": "https://localhost:44301/home/CommonQuery?type=角色权限管理&queryType=查询用户所有权限&qc1=$id",
+                                                                            "searchable": true
+                                                                        },
+                                                                        {
+                                                                            "type": "alert",
+                                                                            "body": [
+                                                                                {
+                                                                                    "type": "tpl",
+                                                                                    "tpl": "用户角色所拥有的权限用户也拥有。用户权限则是独立与角色之外的权限,角色拥有的权限用户权限可同时存在",
+                                                                                    "wrapperComponent": "",
+                                                                                    "inline": false,
+                                                                                    "id": "u:8a8d49737a51",
+                                                                                    "themeCss": {
+                                                                                        "baseControlClassName": {
+                                                                                            "font:hover": {
+                                                                                                "color": "#e70f0f"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ],
+                                                                            "level": "info",
+                                                                            "id": "u:011c5f90dac7"
+                                                                        }
+                                                                    ],
+                                                                    "id": "u:ae3a339f8310",
+                                                                    "actions": [
+                                                                        {
+                                                                            "type": "submit",
+                                                                            "label": "提交",
+                                                                            "primary": true
+                                                                        }
+                                                                    ],
+                                                                    "feat": "Insert"
+                                                                }
+                                                            ],
+                                                            "id": "u:021a633cf05b",
+                                                            "actions": [
+                                                                {
+                                                                    "type": "button",
+                                                                    "actionType": "cancel",
+                                                                    "label": "取消",
+                                                                    "id": "u:26fdd912e29f"
+                                                                },
+                                                                {
+                                                                    "type": "button",
+                                                                    "actionType": "confirm",
+                                                                    "label": "确定",
+                                                                    "primary": true,
+                                                                    "id": "u:ff72f247f658"
+                                                                }
+                                                            ],
+                                                            "showCloseButton": true,
+                                                            "closeOnOutside": false,
+                                                            "closeOnEsc": false,
+                                                            "showErrorMsg": true,
+                                                            "showLoading": true,
+                                                            "draggable": false
+                                                        },
+                                                        "id": "u:d5f48b03550e"
+                                                    }
+                                                ],
+                                                "id": "u:b8078a3506d8"
+                                            }
+                                        ],
+                                        "bulkActions": [],
+                                        "itemActions": [],
+                                        "id": "u:8088773e90f6",
+                                        "filterSettingSource": [
+                                            "originAccount",
+                                            "id",
+                                            "originSys"
+                                        ],
+                                        "perPageAvailable": [
+                                            10
+                                        ],
+                                        "messages": {}
+                                    }
+                                ],
+                                "style": {
+                                    "position": "static",
+                                    "display": "block"
+                                },
+                                "size": "none",
+                                "wrapperBody": false,
+                                "id": "u:869ed634c335",
+                                "isFixedHeight": false,
+                                "isFixedWidth": false,
+                                "themeCss": {
+                                    "baseControlClassName": {
+                                        "boxShadow:default": "var(--shadows-shadow-sm)",
+                                        "padding-and-margin:default": {
+                                            "paddingTop": "var(--sizes-size-3)",
+                                            "paddingRight": "var(--sizes-size-3)",
+                                            "paddingBottom": "var(--sizes-size-3)",
+                                            "paddingLeft": "var(--sizes-size-3)"
+                                        }
+                                    }
+                                },
+                                "hiddenOn": "${ISEMPTY(dropdown)}"
+                            }
+                        ],
+                        "wrapperBody": false,
+                        "style": {
+                            "position": "relative",
+                            "minHeight": "200px"
+                        },
+                        "id": "u:aa1b623cb931"
+                    }
+                ],
+                "id": "u:50e5f3fbec53"
+            };
+            let amisScoped = amis.embed(
+                '#root', amisJSON, {
+                data: {
+                    myData: 'amis'
+                },
+                context: {
+                    amisUser: {
+                        id: 1,
+                        name: 'test user'
+                    }
+                },
+
+            },
+                {
+                    //fetcher: ({ url, method, data, config, headers }) => {
+                    //    // 获取当前时间戳
+                    //    let timestamp = Date.now();
+
+                    //    // 根据method、data和时间戳生成签名
+                    //    let signature = "489787" + timestamp;
+
+                    //    console.log(config)
+                    //    console.log(data)
+                    //    config = config || {};
+                    //    config.headers = config.headers || headers || {};
+                    //    config.withCredentials = true;
+
+                    //    // 将签名添加到请求头
+                    //    config.headers = {
+                    //        ...config.headers,
+                    //        'X-Signature': signature,
+                    //        'X-Timestamp': timestamp
+                    //    };
+
+                    //    // 发送请求
+                    //    return fetch(url, {
+                    //        method: method,
+                    //        headers: config.headers,
+                    //        body: JSON.stringify(data)
+                    //    }).then(res => res.json());
+                    //},
+                    //fetcher: ({ url, method, data, config, headers }) => {
+                    //    config = config || {};
+                    //    config.headers = config.headers || headers || {};
+                    //    config.credentials = 'include';
+
+                    //    // 获取当前时间戳
+                    //    let timestamp = Date.now();
+
+                    //    // 根据method、data和时间戳生成签名
+                    //    let signature = "489787" + timestamp;
+
+                    //    if (method !== 'post' && method !== 'put' && method !== 'patch') {
+                    //        if (data) {
+
+                    //            const queryString = Object.keys(data).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`).join('&');
+                    //            url += (url.indexOf('?') === -1 ? '?' : '&') + queryString;
+                    //        }
+                    //        config.headers['Content-Type'] = 'application/json';
+                    //        config.headers['signature'] = signature;
+                    //        config.headers['timestamp'] = timestamp;
+
+                    //        return fetch(url, config).then(res => res.json());
+                    //    } else if (data && data instanceof FormData) {
+
+                    //        config.method = method;
+                    //        config.body = data;
+                    //    } else if (
+                    //        data &&
+                    //        typeof data !== 'string' &&
+                    //        !(data instanceof Blob) &&
+                    //        !(data instanceof ArrayBuffer)
+                    //    ) {
+
+                    //        config.method = method;
+                    //        config.body = JSON.stringify(data);
+                    //        config.headers['content-type'] = 'application/json';
+                    //        config.headers['signature'] = signature;
+                    //        config.headers['timestamp'] = timestamp;
+                    //        data = JSON.stringify(data);
+                    //        //debugger
+                    //    }
+
+                    //    return fetch(url, config).then(res => res.json());
+                    //},//fetcher结束
+                    //请求改造，携带加密参数等等...
+                    fetcher: async ({ url, method, data, config, headers }) => {
+                        config = config || {};
+                        config.headers = config.headers || headers || {};
+                        config.withCredentials = true;
+
+                        // 获取当前时间戳
+                        let timestamp = Date.now();
+
+                        // 根据 method、data 和时间戳生成签名
+                        let signature = "489787" + timestamp;
+
+                        if (method !== 'post' && method !== 'put' && method !== 'patch') {
+                            if (data) {
+                                const queryString = Object.keys(data).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`).join('&');
+                                url += (url.indexOf('?') === -1 ? '?' : '&') + queryString;
+                            }
+                            config.headers['Content-Type'] = 'application/json';
+                            config.headers['signature'] = signature;
+                            config.headers['timestamp'] = timestamp;
+
+                            const response = await axios.get(url, config);
+                            return response.data;
+                        } else if (data && data instanceof FormData) {
+                            config.method = method;
+                            config.data = data;
+                        } else if (
+                            data &&
+                            typeof data !== 'string' &&
+                            !(data instanceof Blob) &&
+                            !(data instanceof ArrayBuffer)
+                        ) {
+                            config.method = method;
+                            config.data = data;
+                            config.headers['Content-Type'] = 'application/json';
+                            config.headers['signature'] = signature;
+                            config.headers['timestamp'] = timestamp;
+                            data = JSON.stringify(data);
+                        }
+
+                        const response = await axios(url, config);
+                        return response;
+                    }
+
+
+
+
+
+                }
+            );
+
+
+
+        })();
+    </script>
+</body>
+</html>
